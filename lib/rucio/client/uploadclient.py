@@ -144,8 +144,7 @@ class UploadClient:
         # helper to get rse from rse_expression:
         def _pick_random_rse(rse_expression: str) -> dict[str, Any]:
             rses = [r['rse'] for r in self.client.list_rses(rse_expression)]  # can raise InvalidRSEExpression
-            random.shuffle(rses)
-            return rses[0]
+            return random.choice(rses)  # noqa: S311
 
         logger = self.logger
         self.trace['uuid'] = generate_uuid()
@@ -226,7 +225,7 @@ class UploadClient:
             rse_attributes = {}
             try:
                 rse_attributes = self.client.list_rse_attributes(rse)
-            except:
+            except Exception:
                 logger(logging.WARNING, 'Attributes of the RSE: %s not available.' % rse)
             if (self.client_location and 'lan' in rse_settings['domain'] and RseAttr.SITE in rse_attributes):
                 if self.client_location['site'] == rse_attributes[RseAttr.SITE]:
